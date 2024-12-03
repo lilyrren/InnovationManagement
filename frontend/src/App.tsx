@@ -1,14 +1,11 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { ChakraProvider } from "@chakra-ui/react";
-import { Provider } from "./components/ui/provider";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Search from "./Search";
-import logo from "./logo.svg";
 import "./App.css";
+import { Provider } from "./components/ui/provider";
 
 function App() {
   return (
-    <Provider>
+    <Provider defaultTheme="light">
       <Router>
         <Routes>
           <Route path="/" element={<Search />} />

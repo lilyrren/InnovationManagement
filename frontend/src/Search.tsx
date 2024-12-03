@@ -1,6 +1,16 @@
 import React, { useState } from "react";
-import { Box, Input, VStack, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Input,
+  HStack,
+  Text,
+  VStack,
+  Separator,
+  Em,
+  Link,
+} from "@chakra-ui/react";
 import { Button } from "./components/ui/button";
+import { Tooltip } from "./components/ui/tooltip";
 
 interface Topic {
   id: string;
@@ -13,6 +23,10 @@ const Search: React.FC = () => {
 
   const handleSearch = async () => {
     try {
+      if (!query) {
+        setResults(null);
+        return;
+      }
       const response = await fetch(
         `https://api.openalex.org/topics?search=${query}`
       );
@@ -29,42 +43,89 @@ const Search: React.FC = () => {
   };
 
   return (
-    <VStack spaceX={4} pt={10}>
-      <Text fontSize="2xl" fontWeight="bold">
-        Search Topics
-      </Text>
-      <Box>
-        <Input
-          placeholder="Enter a topic to search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          width="300px"
-          mr={2}
-          aria-label="Search Input"
-        />
-        <Button colorScheme="teal" onClick={handleSearch}>
-          Search
-        </Button>
+    <HStack
+      minHeight={"100vh"}
+      alignItems={"center"}
+      justifyContent={"space-evenly"}
+      spaceX={0}
+      pt={10}
+    >
+      <Box display={"flex"} justifyContent={"center"} width={"40vw"}>
+        <VStack spaceY={4} alignItems={"flex-start"}>
+          <Text fontSize="3xl" fontWeight="bold">
+            Search Topics
+          </Text>
+          <HStack alignItems={"center"}>
+            <Input
+              placeholder="Enter a topic to search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              minWidth="300px"
+              mr={2}
+              aria-label="Search Input"
+            />
+            <Button onClick={handleSearch}>Search</Button>
+          </HStack>
+        </VStack>
       </Box>
-      {results && (
+      <Separator orientation={"vertical"} size={"lg"} height={700} />
+      {results ? (
         <Box
-          mt={4}
           p={4}
           border="1px solid #ccc"
           borderRadius="md"
-          width="300px"
+          width="40vw"
+          height={"60vh"}
+          overflowY={"auto"}
         >
-          <Text fontWeight="bold">Results:</Text>
+          <Text
+            justifySelf={"center"}
+            fontWeight="bold"
+            fontSize={"2xl"}
+            mb={4}
+          >
+            Results:
+          </Text>
           {results.length > 0 ? (
-            results.map((topic) => (
-              <Text key={topic.id}>{topic.display_name}</Text>
+            results.map((topic, idx) => (
+              <div key={topic.id}>
+                {idx > 0 && <Separator size={"md"} my={1} />}
+                <Tooltip
+                  content={"View in OpenAlex"}
+                  openDelay={200}
+                  closeDelay={50}
+                >
+                  <Link
+                    href={topic.id}
+                    target="_blank"
+                    rel={"noopener noreferrer"}
+                  >
+                    {topic.display_name}
+                  </Link>
+                </Tooltip>
+              </div>
             ))
           ) : (
             <Text>No results found.</Text>
           )}
         </Box>
+      ) : (
+        <Box
+          p={4}
+          border="1px solid #ccc"
+          borderRadius="md"
+          width="40vw"
+          display={"flex"}
+          justifyContent={"center"}
+          alignItems={"center"}
+          height={"60vh"}
+        >
+          <Em color={"#555555"} fontSize={"5xl"}>
+            Search for a topic!
+          </Em>
+        </Box>
       )}
-    </VStack>
+    </HStack>
   );
 };
 
